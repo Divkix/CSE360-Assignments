@@ -96,10 +96,15 @@ public class homework1FX extends Application {
         }
 
         // Add the food item to the bill
-        double priceFoodItem = menuPrices.getPrice(foodItem);
-        billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the bill
-                                                                                      // text
-        totalBill += priceFoodItem; // Add the price of the food item to the total bill
+        Double price = menuPrices.getPrice(foodItem);
+        if (price != null) {
+            double priceFoodItem = price.doubleValue();
+            totalBill += priceFoodItem;
+            billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the
+                                                                                          // bill
+        } else {
+            totalBill += 0;
+        }
 
         // Check which drink is selected
         RadioButton selectedDrink = (RadioButton) drinksGroup.getSelectedToggle(); // Get the selected drink
@@ -130,7 +135,9 @@ public class homework1FX extends Application {
         foodChickenSandwich.setSelected(false);
         foodBagel.setSelected(false);
         foodPotatoSalad.setSelected(false);
-        drinksGroup.getSelectedToggle().setSelected(false);
+        if (drinksGroup.getSelectedToggle() != null) {
+            drinksGroup.getSelectedToggle().setSelected(false);
+        }
 
         // Clear the bill text area
         billTextArea.clear();
