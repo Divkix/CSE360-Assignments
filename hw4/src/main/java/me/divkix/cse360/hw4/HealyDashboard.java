@@ -139,7 +139,7 @@ public class HealyDashboard extends Application {
         });
 
         // Add a back button to the top left corner
-        Button backButton = new Button("Back"); // Create a button
+        Button backButton = new Button("Back"); // Create a back button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
         backButton.setStyle(setStyleButtonString); // Set the font size
 
@@ -219,7 +219,7 @@ public class HealyDashboard extends Application {
         });
 
         // Add a back button to the top left corner
-        Button backButton = new Button("Back"); // Create a button
+        Button backButton = new Button("Back"); // Create a back button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
         backButton.setStyle(setStyleButtonString); // Set the font size
 
@@ -275,7 +275,7 @@ public class HealyDashboard extends Application {
         Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:",patientName)); // Create a label for employee name
 
         // Add a back button to the top left corner
-        Button backButton = new Button("Back"); // Create a button
+        Button backButton = new Button("Back"); // Create a back button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
         backButton.setStyle(setStyleButtonString); // Set the font size
 
