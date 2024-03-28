@@ -13,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // Main class
 public class HealyDashboard extends Application {
@@ -20,6 +22,82 @@ public class HealyDashboard extends Application {
     // Constants
     public static final String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
     public static final String layoutStyleString = "-fx-padding: 20; -fx-alignment: center;"; // Add padding and center the components
+
+    // Database Connection class
+    // Helper class to connect to the local mysql database
+    // The mysql database is called healy_health_system and is hosted on localhost (using docker)
+    public static class DatabaseConnection {
+        private static final String DB_URL = "jdbc:mysql://localhost:3306/healy_health_system";
+        private static final String DB_USER = "root";
+        private static final String DB_PASSWORD = "password";
+
+        public static Connection getConnection() {
+            Connection conn = null;
+            try {
+                // Register the JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                // Open a connection
+                conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+            return conn;
+        }
+    }
+
+    // Helper function to save data to the database using prepared statements
+    // The function takes in a variable number of arguments
+    // The arguments are expected to be in pairs of column name and value
+    // example: saveData("first_name", "John", "last_name", "Doe", "email", "john.doe@example.com")
+    public static void saveData(String tableName, Object... args) {
+        // Get the database connection
+        Connection conn = DatabaseConnection.getConnection();
+
+        // Build the SQL query using StringBuilder
+        StringBuilder sql = new StringBuilder("INSERT INTO ? (");
+        List<Object> values = new ArrayList<>(); // Create a list to store the values
+        values.add(tableName); // Add the table name to the list
+
+        // create a loop to iterate over the arguments and build the SQL query and values list by pairs
+        // add them to the prepared statement
+        for (int i = 0; i < args.length; i += 2) {
+            sql.append((String) args[i]).append(", ");
+            values.add(args[i + 1]);
+        }
+
+        sql.setLength(sql.length() - 2); // Remove the trailing ", "
+        sql.append(") VALUES ("); // Add the VALUES, close and open parenthesis
+
+        // Add the required number of "?" placeholders
+        sql.append("?, ".repeat(Math.max(0, values.size() - 1)));
+
+        // Remove the trailing ", "
+        sql.setLength(sql.length() - 2);
+        sql.append(")"); // add the closing parenthesis
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < values.size(); i++) {
+                statement.setObject(i + 1, values.get(i));
+            }
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Data saved successfully!");
+            } else {
+                System.out.println("Failed to save data.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // Main method to launch the application
     public static void main(String[] args) {
@@ -169,8 +247,8 @@ public class HealyDashboard extends Application {
         Label totalCACScoreLabel = new Label("Total Agatston CAC Score: "); // Create a label for password
         TextField totalCACScoreTextField = new TextField(); // Create a password field for total Agatston CAC Score
         totalCACScoreTextField.setPrefWidth(150); // Set the width of the text field
-        HBox totalCACScore = new HBox(5);
-        totalCACScore.getChildren().addAll(totalCACScoreLabel, totalCACScoreTextField);
+        HBox totalCACScore = new HBox(5); // make a hbox to put them horizontally in order
+        totalCACScore.getChildren().addAll(totalCACScoreLabel, totalCACScoreTextField); // add to hbox
 
         // Vesel label Agaston CAC Score label
         Label vesselLevelAgastonCacScore = new Label("Vessel level Agaston CAC Score"); // Create a label for vessel level Agaston CAC Score
@@ -179,36 +257,36 @@ public class HealyDashboard extends Application {
         Label lmLabel = new Label("LM: "); // Create a label for LM
         TextField lmTextField = new TextField(); // Create a text field for LM
         lmTextField.setPrefWidth(150); // Set the width of the text field
-        HBox lmBox = new HBox(5);
-        lmBox.getChildren().addAll(lmLabel, lmTextField);
+        HBox lmBox = new HBox(5); // make a hbox to put them horizontally in order
+        lmBox.getChildren().addAll(lmLabel, lmTextField); // add to hbox
 
         // Label for LAD and text field
         Label ladLabel = new Label("LAD: "); // Create a label for LAD
         TextField ladTextField = new TextField(); // Create a text field for LAD
         ladTextField.setPrefWidth(150); // Set the width of the text field
-        HBox ladBox = new HBox(5);
-        ladBox.getChildren().addAll(ladLabel, ladTextField);
+        HBox ladBox = new HBox(5); // make a hbox to put them horizontally in order
+        ladBox.getChildren().addAll(ladLabel, ladTextField); // add to hbox
 
         // Label for LCX and text field
         Label lcxLabel = new Label("LCX: "); // Create a label for LCX
         TextField lcxTextField = new TextField(); // Create a text field for LCX
         lcxTextField.setPrefWidth(150); // Set the width of the text field
-        HBox lcxBox = new HBox(5);
-        lcxBox.getChildren().addAll(lcxLabel, lcxTextField);
+        HBox lcxBox = new HBox(5); // make a hbox to put them horizontally in order
+        lcxBox.getChildren().addAll(lcxLabel, lcxTextField); // add to hbox
 
         // Label for RCA and text field
         Label rcaLabel = new Label("RCA: "); // Create a label for RCA
         TextField rcaTextField = new TextField(); // Create a text field for RCA
         rcaTextField.setPrefWidth(150); // Set the width of the text field
-        HBox rcaBox = new HBox(5);
-        rcaBox.getChildren().addAll(rcaLabel, rcaTextField);
+        HBox rcaBox = new HBox(5); // make a hbox to put them horizontally in order
+        rcaBox.getChildren().addAll(rcaLabel, rcaTextField); // add to hbox
 
         // Label for PDA and text field
         Label pdaLabel = new Label("PDA: "); // Create a label for PDA
         TextField pdaTextField = new TextField(); // Create a text field for PDA
         pdaTextField.setPrefWidth(150); // Set the width of the text field
-        HBox pdaBox = new HBox(5);
-        pdaBox.getChildren().addAll(pdaLabel, pdaTextField);
+        HBox pdaBox = new HBox(5); // make a hbox to put them horizontally in order
+        pdaBox.getChildren().addAll(pdaLabel, pdaTextField); // add to hbox
 
         // Login Button
         Button saveButton = new Button("Save Information"); // Create a button for saving scores information
