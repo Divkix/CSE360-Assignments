@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -419,7 +420,6 @@ public class HealyDashboard extends Application {
                 lcxScore = patientResults.getDouble("lcx_score");
                 rcaScore = patientResults.getDouble("rca_score");
                 pdaScore = patientResults.getDouble("pda_score");
-                System.out.println("First Name: " + firstName);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -428,17 +428,40 @@ public class HealyDashboard extends Application {
         // Components for patient login
         Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:", firstName)); // Create a label showcasing patient name
 
-        // create a label for each of the risk score and put them in two separate vboxes side by side to show them horizontally
-        VBox riskScores = new VBox(10);
-        riskScores.setAlignment(Pos.CENTER);
-        riskScores.setStyle(layoutStyleString);
-        Label totalAgatstonCACScoreLabel = new Label("Total Agatston CAC Score: " + totalAgatstonCACScore); // Create a label for total Agatston CAC Score
-        Label lmScoreLabel = new Label("LM Score: " + lmScore); // Create a label for LM Score
-        Label ladScoreLabel = new Label("LAD Score: " + ladScore); // Create a label for LAD Score
-        Label lcxScoreLabel = new Label("LCX Score: " + lcxScore); // Create a label for LCX Score
-        Label rcaScoreLabel = new Label("RCA Score: " + rcaScore); // Create a label for RCA Score
-        Label pdaScoreLabel = new Label("PDA Score: " + pdaScore); // Create a label for PDA Score
-        riskScores.getChildren().addAll(totalAgatstonCACScoreLabel, lmScoreLabel, ladScoreLabel, lcxScoreLabel, rcaScoreLabel, pdaScoreLabel); // Add the components to the layout
+        // Create a GridPane with horizontal and vertical gaps of 10
+        GridPane riskScores = new GridPane();
+        riskScores.setHgap(10);
+        riskScores.setVgap(10);
+
+        // Create labels for each of the risk scores
+        Label totalAgatstonCACScoreLabel = new Label("Total Agatston CAC Score: ");
+        Label lmScoreLabel = new Label("LM Score: ");
+        Label ladScoreLabel = new Label("LAD Score: ");
+        Label lcxScoreLabel = new Label("LCX Score: ");
+        Label rcaScoreLabel = new Label("RCA Score: ");
+        Label pdaScoreLabel = new Label("PDA Score: ");
+
+        // Create labels for each of the risk score values
+        Label totalAgatstonCACScoreValue = new Label(String.valueOf(totalAgatstonCACScore));
+        Label lmScoreValue = new Label(String.valueOf(lmScore));
+        Label ladScoreValue = new Label(String.valueOf(ladScore));
+        Label lcxScoreValue = new Label(String.valueOf(lcxScore));
+        Label rcaScoreValue = new Label(String.valueOf(rcaScore));
+        Label pdaScoreValue = new Label(String.valueOf(pdaScore));
+
+        // Add the labels to the GridPane
+        riskScores.add(totalAgatstonCACScoreLabel, 0, 0);
+        riskScores.add(totalAgatstonCACScoreValue, 1, 0);
+        riskScores.add(lmScoreLabel, 0, 1);
+        riskScores.add(lmScoreValue, 1, 1);
+        riskScores.add(ladScoreLabel, 0, 2);
+        riskScores.add(ladScoreValue, 1, 2);
+        riskScores.add(lcxScoreLabel, 0, 3);
+        riskScores.add(lcxScoreValue, 1, 3);
+        riskScores.add(rcaScoreLabel, 0, 4);
+        riskScores.add(rcaScoreValue, 1, 4);
+        riskScores.add(pdaScoreLabel, 0, 5);
+        riskScores.add(pdaScoreValue, 1, 5);
 
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a back button
