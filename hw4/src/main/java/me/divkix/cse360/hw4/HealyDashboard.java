@@ -9,10 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,27 +53,29 @@ public class HealyDashboard extends Application {
         sql.setLength(sql.length() - 2);
         sql.append(")"); // add the closing parenthesis
 
+        // use try catch block to handle the prepared statement
         try {
             PreparedStatement statement = conn.prepareStatement(sql.toString());
-            //print the sql query
-            System.out.println(sql);
+
+            // loop over the values list and set the values in the prepared statement
             for (int i = 0; i < values.size(); i++) {
                 statement.setObject(i + 1, values.get(i));
             }
-
-            int rowsInserted = statement.executeUpdate();
+            int rowsInserted = statement.executeUpdate(); // execute the prepared statement
             if (rowsInserted > 0) {
+                // print success message if data is saved
                 System.out.println("Data saved successfully!");
             } else {
+                // print error message if data is not saved
                 System.out.println("Failed to save data.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // print the stack trace
         } finally {
             try {
-                conn.close();
+                conn.close(); // close the connection
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace(); // print the stack trace
             }
         }
     }
@@ -102,9 +102,12 @@ public class HealyDashboard extends Application {
             // Return the result set
             return resultSet;
         } catch (SQLException e) {
+            // Print the stack trace if an exception occurs
             e.printStackTrace();
         }
 
+        // Return null if the result set is empty
+        // this means that the patient ID was not found in the database
         return null;
     }
 
@@ -113,13 +116,14 @@ public class HealyDashboard extends Application {
         launch(args);
     }
 
+    // Start method to build the initial view
     @Override
     public void start(Stage primaryStage) {
         // Initial view
-        VBox loginView = mainLoginView(primaryStage);
+        VBox mainView = mainScreen(primaryStage);
 
         // Set the scene with height and width
-        Scene scene = new Scene(loginView, 600, 600);
+        Scene scene = new Scene(mainView, 600, 600);
 
         // Set the title of the window
         primaryStage.setScene(scene); // Set the scene
@@ -127,11 +131,10 @@ public class HealyDashboard extends Application {
     }
 
     // Method to build main menu view
-    private VBox mainLoginView(Stage primaryStage) {
-        VBox loginLayout = new VBox(35); // Create a layout with vertical spacing of 35
-
-        loginLayout.setAlignment(Pos.CENTER); // Center the components
-        loginLayout.setStyle(layoutStyleString); // Add padding and center the components
+    private VBox mainScreen(Stage primaryStage) {
+        VBox mainScreenLayout = new VBox(35); // Create a layout with vertical spacing of 35
+        mainScreenLayout.setAlignment(Pos.CENTER); // Center the components
+        mainScreenLayout.setStyle(layoutStyleString); // Add padding and center the components
 
         // create a label called "Healy Dashboard"
         Label titleLabel = new Label("Welcome to Heart Health Imaging and Recording System"); // Create a label
@@ -156,88 +159,87 @@ public class HealyDashboard extends Application {
         patientViewButton.setOnAction(e -> switchToPatientView(primaryStage)); // Switch to patient view
 
         // Add the components to the layout
-        loginLayout.getChildren().addAll(titleLabel, patientIntakeButton, cTScanTechViewButton, patientViewButton);
+        mainScreenLayout.getChildren().addAll(titleLabel, patientIntakeButton, cTScanTechViewButton, patientViewButton);
 
         // Return the layout
-        return loginLayout;
+        return mainScreenLayout;
     }
 
-    // Method to switch to patient login when the patient login button is clicked
+    // Method to switch to patient intake form when the patient intake button is clicked
     private void switchToPatientIntake(Stage primaryStage) {
-        VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
-        patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
+        GridPane patientIntakeLayout = new GridPane(); // Create a GridPane layout
+        patientIntakeLayout.setHgap(10); // Set horizontal gap
+        patientIntakeLayout.setVgap(10); // Set vertical gap
+        patientIntakeLayout.setAlignment(Pos.CENTER); // Center the components
 
         // create a label called "Patient Intake Form"
         Label titleLabel = new Label("Patient Intake Form"); // Create a label
         titleLabel.setStyle("-fx-font-size: 16pt;"); // Set the font size
+        patientIntakeLayout.add(titleLabel, 0, 0, 2, 1); // Add to GridPane at column 0, row 0, span 2 columns
 
         // First Name text field
         Label patientFirstNameLabel = new Label("First Name:"); // Create a label for patient name
         TextField patientFirstNameField = new TextField(); // Create a text field for patient name
         patientFirstNameField.prefWidth(10);
-        HBox firstnameBox = new HBox(5);
-        firstnameBox.getChildren().addAll(patientFirstNameLabel, patientFirstNameField);
+        patientIntakeLayout.add(patientFirstNameLabel, 0, 1); // Add to GridPane at column 0, row 1
+        patientIntakeLayout.add(patientFirstNameField, 1, 1); // Add to GridPane at column 1, row 1
 
         // Middle Name text field
         Label patientMiddleNameLabel = new Label("Middle Name:"); // Create a label for patient name
         TextField patientMiddleNameField = new TextField(); // Create a text field for patient name
         patientMiddleNameField.prefWidth(10);
-        HBox middlenameBox = new HBox(5);
-        middlenameBox.getChildren().addAll(patientMiddleNameLabel, patientMiddleNameField);
+        patientIntakeLayout.add(patientMiddleNameLabel, 0, 2); // Add to GridPane at column 0, row 2
+        patientIntakeLayout.add(patientMiddleNameField, 1, 2); // Add to GridPane at column 1, row 2
 
         // Last Name text field
         Label patientLastNameLabel = new Label("Last Name:"); // Create a label for last name
         TextField patientLastNameField = new TextField(); // Create a text field for last name
         patientLastNameField.setPrefWidth(150); // Set the width of the text field
-        HBox lastnameBox = new HBox(5);
-        lastnameBox.getChildren().addAll(patientLastNameLabel, patientLastNameField);
+        patientIntakeLayout.add(patientLastNameLabel, 0, 3); // Add to GridPane at column 0, row 3
+        patientIntakeLayout.add(patientLastNameField, 1, 3); // Add to GridPane at column 1, row 3
 
         // email field
         Label emailLabel = new Label("Email:"); // Create a label for email
         TextField emailField = new TextField(); // Create a text field for email
         emailField.setPrefWidth(150); // Set the width of the text field
-        HBox emailBox = new HBox(5);
-        emailBox.getChildren().addAll(emailLabel, emailField);
+        patientIntakeLayout.add(emailLabel, 0, 4); // Add to GridPane at column 0, row 4
+        patientIntakeLayout.add(emailField, 1, 4); // Add to GridPane at column 1, row 4
 
         // phone number field
         Label phoneLabel = new Label("Phone Number:"); // Create a label for phone number
         TextField phoneField = new TextField(); // Create a text field for phone number
         phoneField.setPrefWidth(150); // Set the width of the text field
-        HBox phoneBox = new HBox(5);
-        phoneBox.getChildren().addAll(phoneLabel, phoneField);
+        patientIntakeLayout.add(phoneLabel, 0, 5); // Add to GridPane at column 0, row 5
+        patientIntakeLayout.add(phoneField, 1, 5); // Add to GridPane at column 1, row 5
 
         // Health History
         Label healthHistoryLabel = new Label("Health History:");
         TextField healthHistoryField = new TextField();
         healthHistoryField.setPrefWidth(150); // Set the width of the text field
-        HBox healthHistoryBox = new HBox(5);
-        healthHistoryBox.getChildren().addAll(healthHistoryLabel, healthHistoryField);
+        patientIntakeLayout.add(healthHistoryLabel, 0, 6); // Add to GridPane at column 0, row 6
+        patientIntakeLayout.add(healthHistoryField, 1, 6); // Add to GridPane at column 1, row 6
 
         // Insurance Provider Box
         Label insuranceProviderLabel = new Label("Insurance Provider:");
         TextField insuranceProviderField = new TextField();
         insuranceProviderField.setPrefWidth(150); // Set the width of the text field
-        HBox insuranceProviderBox = new HBox(5);
-        insuranceProviderBox.getChildren().addAll(insuranceProviderLabel, insuranceProviderField);
+        patientIntakeLayout.add(insuranceProviderLabel, 0, 7); // Add to GridPane at column 0, row 7
+        patientIntakeLayout.add(insuranceProviderField, 1, 7); // Add to GridPane at column 1, row 7
 
         // Insurance ID
         Label insuranceIDLabel = new Label("Insurance ID:");
         TextField insuranceIDField = new TextField();
         insuranceIDField.setPrefWidth(150); // Set the width of the text field
-        HBox insuranceIDBox = new HBox(5);
-        insuranceIDBox.getChildren().addAll(insuranceIDLabel, insuranceIDField);
+        patientIntakeLayout.add(insuranceIDLabel, 0, 8); // Add to GridPane at column 0, row 8
+        patientIntakeLayout.add(insuranceIDField, 1, 8); // Add to GridPane at column 1, row 8
 
-        // Create a layout for the patient intake form fields
-        VBox patientIntakeLayout = new VBox(5); // Create a layout with vertical spacing of 5
-        patientIntakeLayout.getChildren().addAll(firstnameBox, middlenameBox, lastnameBox, emailBox, phoneBox, healthHistoryBox, insuranceProviderBox, insuranceIDBox); // Add the components to the layout
+        // Save Patient Info Button
+        Button savePatientInfoButton = new Button("Save Patient Info"); // Create a button for save patient info
+        savePatientInfoButton.setStyle(setStyleButtonString); // Set the font size
+        patientIntakeLayout.add(savePatientInfoButton, 0, 9, 2, 1); // Add to GridPane at column 0, row 9, span 2 columns
 
-        // Login Button
-        Button loginButton = new Button("Save Patient Info"); // Create a button for login
-        loginButton.setStyle(setStyleButtonString); // Set the font size
-
-        // Add Event Handler for loginButton to handle the login logic
-        loginButton.setOnAction(e -> {
+        // Add Event Handler for savePatientInfoButton to handle the save info logic
+        savePatientInfoButton.setOnAction(e -> {
             String patientId = patientLastNameField.getText() + "_" + patientFirstNameField.getText() + "_" + phoneField.getText();
             saveData(
                     patient_intake_db_table,
@@ -255,78 +257,81 @@ public class HealyDashboard extends Application {
         Button backButton = new Button("Back"); // Create a back button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
         backButton.setStyle(setStyleButtonString); // Set the font size
-
-        // Add the components to the layout
-        patientLoginLayout.getChildren().addAll(titleLabel, patientIntakeLayout, loginButton, backButton);
+        patientIntakeLayout.add(backButton, 0, 10, 2, 1); // Add to GridPane at column 0, row 10, span 2 columns
 
         // Set the scene with height and width
-        Scene patientLoginScene = new Scene(patientLoginLayout, 600, 600);
-        primaryStage.setScene(patientLoginScene); // Set the scene
+        Scene patientIntakeScene = new Scene(patientIntakeLayout, 600, 600);
+        primaryStage.setScene(patientIntakeScene); // Set the scene
+
     }
 
-    // Method to switch to employee login when the patient login button is clicked
+    // Method to switch to ct scan tech view
     private void switchToCTScanTechView(Stage primaryStage) {
-        VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
-        patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
+
+        // Create a layout for the CT Scan Tech View
+        GridPane ctScanTechViewLayout = new GridPane(); // Create a GridPane layout
+        ctScanTechViewLayout.setHgap(10); // Set horizontal gap
+        ctScanTechViewLayout.setVgap(10); // Set vertical gap
+        ctScanTechViewLayout.setAlignment(Pos.CENTER); // Center the components
 
         // Patient ID label and text field
-        Label patientIdLabel = new Label("Patient ID: "); // Create a label for employee name
-        TextField patientIdTextField = new TextField(); // Create a text field for employee name
+        Label patientIdLabel = new Label("Patient ID: "); // Create a label for patient id
+        TextField patientIdTextField = new TextField(); // Create a text field for id
         patientIdTextField.setPrefWidth(150); // Set the width of the text field
-        HBox patientIdBox = new HBox(5);
-        patientIdBox.getChildren().addAll(patientIdLabel, patientIdTextField);
+        ctScanTechViewLayout.add(patientIdLabel, 0, 0); // Add to GridPane at column 0, row 0
+        ctScanTechViewLayout.add(patientIdTextField, 1, 0); // Add to GridPane at column 1, row 0
 
         // Total Agatston CAC Score label and text field
         Label totalCACScoreLabel = new Label("Total Agatston CAC Score: "); // Create a label for cac score
         TextField totalCACScoreTextField = new TextField(); // Create a text field for total Agatston CAC Score
         totalCACScoreTextField.setPrefWidth(150); // Set the width of the text field
-        HBox totalCACScore = new HBox(5); // make a hbox to put them horizontally in order
-        totalCACScore.getChildren().addAll(totalCACScoreLabel, totalCACScoreTextField); // add to hbox
+        ctScanTechViewLayout.add(totalCACScoreLabel, 0, 1); // Add to GridPane at column 0, row 1
+        ctScanTechViewLayout.add(totalCACScoreTextField, 1, 1); // Add to GridPane at column 1, row 1
 
         // Vesel label Agaston CAC Score label
         Label vesselLevelAgastonCacScore = new Label("Vessel level Agaston CAC Score"); // Create a label for vessel level Agaston CAC Score
+        ctScanTechViewLayout.add(vesselLevelAgastonCacScore, 0, 2); // Add to GridPane at column 0, row 2
 
         // Label for LM and text field
         Label lmLabel = new Label("LM: "); // Create a label for LM
         TextField lmTextField = new TextField(); // Create a text field for LM
         lmTextField.setPrefWidth(150); // Set the width of the text field
-        HBox lmBox = new HBox(5); // make a hbox to put them horizontally in order
-        lmBox.getChildren().addAll(lmLabel, lmTextField); // add to hbox
+        ctScanTechViewLayout.add(lmLabel, 0, 3); // Add to GridPane at column 0, row 3
+        ctScanTechViewLayout.add(lmTextField, 1, 3); // Add to GridPane at column 1, row 3
 
         // Label for LAD and text field
         Label ladLabel = new Label("LAD: "); // Create a label for LAD
         TextField ladTextField = new TextField(); // Create a text field for LAD
         ladTextField.setPrefWidth(150); // Set the width of the text field
-        HBox ladBox = new HBox(5); // make a hbox to put them horizontally in order
-        ladBox.getChildren().addAll(ladLabel, ladTextField); // add to hbox
+        ctScanTechViewLayout.add(ladLabel, 0, 4); // Add to GridPane at column 0, row 4
+        ctScanTechViewLayout.add(ladTextField, 1, 4); // Add to GridPane at column 1, row 4
 
         // Label for LCX and text field
         Label lcxLabel = new Label("LCX: "); // Create a label for LCX
         TextField lcxTextField = new TextField(); // Create a text field for LCX
         lcxTextField.setPrefWidth(150); // Set the width of the text field
-        HBox lcxBox = new HBox(5); // make a hbox to put them horizontally in order
-        lcxBox.getChildren().addAll(lcxLabel, lcxTextField); // add to hbox
+        ctScanTechViewLayout.add(lcxLabel, 0, 5); // Add to GridPane at column 0, row 5
+        ctScanTechViewLayout.add(lcxTextField, 1, 5); // Add to GridPane at column 1, row 5
 
         // Label for RCA and text field
         Label rcaLabel = new Label("RCA: "); // Create a label for RCA
         TextField rcaTextField = new TextField(); // Create a text field for RCA
         rcaTextField.setPrefWidth(150); // Set the width of the text field
-        HBox rcaBox = new HBox(5); // make a hbox to put them horizontally in order
-        rcaBox.getChildren().addAll(rcaLabel, rcaTextField); // add to hbox
+        ctScanTechViewLayout.add(rcaLabel, 0, 6); // Add to GridPane at column 0, row 6
+        ctScanTechViewLayout.add(rcaTextField, 1, 6); // Add to GridPane at column 1, row 6
 
         // Label for PDA and text field
         Label pdaLabel = new Label("PDA: "); // Create a label for PDA
         TextField pdaTextField = new TextField(); // Create a text field for PDA
         pdaTextField.setPrefWidth(150); // Set the width of the text field
-        HBox pdaBox = new HBox(5); // make a hbox to put them horizontally in order
-        pdaBox.getChildren().addAll(pdaLabel, pdaTextField); // add to hbox
+        ctScanTechViewLayout.add(pdaLabel, 0, 7); // Add to GridPane at column 0, row 7
+        ctScanTechViewLayout.add(pdaTextField, 1, 7); // Add to GridPane at column 1, row 7
 
-        // Login Button
+        // save Button
         Button saveButton = new Button("Save Information"); // Create a button for saving scores information
         saveButton.setStyle(setStyleButtonString); // Set the font size
 
-        // Add Event Handler for saveButton to handle the login logic
+        // Add Event Handler for saveButton to handle the save logic
         saveButton.setOnAction(e -> {
             saveData(
                     patient_results_db_table,
@@ -345,29 +350,29 @@ public class HealyDashboard extends Application {
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
         backButton.setStyle(setStyleButtonString); // Set the font size
 
-        // Add the components to the layout
-        patientLoginLayout.getChildren().addAll(patientIdBox, totalCACScore, vesselLevelAgastonCacScore, lmBox, ladBox, lcxBox, rcaBox, pdaBox, saveButton, backButton);
+        ctScanTechViewLayout.add(saveButton, 0, 8); // Add to GridPane at column 0, row 8
+        ctScanTechViewLayout.add(backButton, 1, 8); // Add to GridPane at column 1, row 8
 
         // Set the scene with height and width
-        Scene patientLoginScene = new Scene(patientLoginLayout, 600, 600);
-        primaryStage.setScene(patientLoginScene); // Set the scene
+        Scene ctScanTechViewScene = new Scene(ctScanTechViewLayout, 600, 600);
+        primaryStage.setScene(ctScanTechViewScene); // Set the scene
     }
 
     // Method to switch to patient information view
     private void switchToPatientView(Stage primaryStage) {
-        VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
-        patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
+        VBox patientViewLayout = new VBox(10); // Create a layout with vertical spacing of 10
+        patientViewLayout.setAlignment(Pos.CENTER); // Center the components
+        patientViewLayout.setStyle(layoutStyleString); // Add padding and center the components
 
-        // Components for patient login
-        Label enterPatientIdLabel = new Label("Enter the Patient ID: "); // Create a label for employee name
+        // patient id label and text field
+        Label enterPatientIdLabel = new Label("Enter the Patient ID: "); // Create a label for patient id
         TextField patientIdTextField = new TextField(); // Create a text field for patient id
 
         // patient info reload button
-        Button patientReloadInformationButton = new Button("Load Patient Information"); // Create a button for login
+        Button patientReloadInformationButton = new Button("Load Patient Information"); // Create a button for load information
         patientReloadInformationButton.setStyle(setStyleButtonString); // Set the font size
 
-        // Add Event Handler for patientReloadInformationButton to handle the login logic
+        // Add Event Handler for patientReloadInformationButton to handle the loading information logic
         patientReloadInformationButton.setOnAction(e -> { // Convert the patient id to an integer
             String patientId = patientIdTextField.getText();
             loadPatientResults(primaryStage, patientId);
@@ -379,11 +384,11 @@ public class HealyDashboard extends Application {
         backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
-        patientLoginLayout.getChildren().addAll(enterPatientIdLabel, patientIdTextField, patientReloadInformationButton, backButton);
+        patientViewLayout.getChildren().addAll(enterPatientIdLabel, patientIdTextField, patientReloadInformationButton, backButton);
 
         // Set the scene with height and width
-        Scene patientLoginScene = new Scene(patientLoginLayout, 600, 600);
-        primaryStage.setScene(patientLoginScene); // Set the scene
+        Scene patientViewScene = new Scene(patientViewLayout, 600, 600);
+        primaryStage.setScene(patientViewScene); // Set the scene
     }
 
     private void loadPatientResults(Stage primaryStage, String insuranceOrPatientId) {
@@ -425,7 +430,7 @@ public class HealyDashboard extends Application {
             e.printStackTrace();
         }
 
-        // Components for patient login
+        // add label for patient name
         Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:", firstName)); // Create a label showcasing patient name
 
         // Create a GridPane with horizontal and vertical gaps of 10
