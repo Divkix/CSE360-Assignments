@@ -16,14 +16,14 @@ import javafx.stage.Stage;
 // Main class
 public class HealyDashboard extends Application {
 
+    // Constants
+    public static final String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
+    public static final String layoutStyleString = "-fx-padding: 20; -fx-alignment: center;"; // Add padding and center the components
+
     // Main method to launch the application
     public static void main(String[] args) {
         launch(args);
     }
-
-    // set public variables for setStyle for each button
-    public static String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
-
     @Override
     public void start(Stage primaryStage) {
         // Initial view
@@ -42,7 +42,7 @@ public class HealyDashboard extends Application {
         VBox loginLayout = new VBox(35); // Create a layout with vertical spacing of 35
 
         loginLayout.setAlignment(Pos.CENTER); // Center the components
-        loginLayout.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
+        loginLayout.setStyle(layoutStyleString); // Add padding and center the components
 
         // create a label called "Healy Dashboard"
         Label titleLabel = new Label("Welcome to Heart Health Imaging and Recording System"); // Create a label
