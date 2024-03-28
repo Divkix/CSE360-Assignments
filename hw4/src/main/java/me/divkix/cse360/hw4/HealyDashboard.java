@@ -7,12 +7,15 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,31 +23,10 @@ import java.util.List;
 public class HealyDashboard extends Application {
 
     // Constants
-    public static final String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
-    public static final String layoutStyleString = "-fx-padding: 20; -fx-alignment: center;"; // Add padding and center the components
-
-    // Database Connection class
-    // Helper class to connect to the local mysql database
-    // The mysql database is called healy_health_system and is hosted on localhost (using docker)
-    public static class DatabaseConnection {
-        private static final String DB_URL = "jdbc:mysql://localhost:3306/healy_health_system";
-        private static final String DB_USER = "root";
-        private static final String DB_PASSWORD = "password";
-
-        public static Connection getConnection() {
-            Connection conn = null;
-            try {
-                // Register the JDBC driver
-                Class.forName("com.mysql.jdbc.Driver");
-
-                // Open a connection
-                conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
-            }
-            return conn;
-        }
-    }
+    private static final String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
+    private static final String layoutStyleString = "-fx-padding: 20; -fx-alignment: center;"; // Add padding and center the components
+    private static final String patient_intake_db_table = "patient_intake";
+    private static final String patient_results_db_table = "patient_results";
 
     // Helper function to save data to the database using prepared statements
     // The function takes in a variable number of arguments
@@ -55,9 +37,8 @@ public class HealyDashboard extends Application {
         Connection conn = DatabaseConnection.getConnection();
 
         // Build the SQL query using StringBuilder
-        StringBuilder sql = new StringBuilder("INSERT INTO ? (");
+        StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (");
         List<Object> values = new ArrayList<>(); // Create a list to store the values
-        values.add(tableName); // Add the table name to the list
 
         // create a loop to iterate over the arguments and build the SQL query and values list by pairs
         // add them to the prepared statement
@@ -70,7 +51,7 @@ public class HealyDashboard extends Application {
         sql.append(") VALUES ("); // Add the VALUES, close and open parenthesis
 
         // Add the required number of "?" placeholders
-        sql.append("?, ".repeat(Math.max(0, values.size() - 1)));
+        sql.append("?, ".repeat(Math.max(0, values.size())));
 
         // Remove the trailing ", "
         sql.setLength(sql.length() - 2);
@@ -78,6 +59,8 @@ public class HealyDashboard extends Application {
 
         try {
             PreparedStatement statement = conn.prepareStatement(sql.toString());
+            //print the sql query
+            System.out.println(sql);
             for (int i = 0; i < values.size(); i++) {
                 statement.setObject(i + 1, values.get(i));
             }
@@ -103,6 +86,7 @@ public class HealyDashboard extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     @Override
     public void start(Stage primaryStage) {
         // Initial view
@@ -169,23 +153,30 @@ public class HealyDashboard extends Application {
         HBox firstnameBox = new HBox(5);
         firstnameBox.getChildren().addAll(patientFirstNameLabel, patientFirstNameField);
 
+        // Middle Name text field
+        Label patientMiddleNameLabel = new Label("Middle Name:"); // Create a label for patient name
+        TextField patientMiddleNameField = new TextField(); // Create a text field for patient name
+        patientMiddleNameField.prefWidth(10);
+        HBox middlenameBox = new HBox(5);
+        middlenameBox.getChildren().addAll(patientMiddleNameLabel, patientMiddleNameField);
+
         // Last Name text field
-        Label LastNameLabel = new Label("Last Name:"); // Create a label for password
-        TextField lastname_text = new PasswordField(); // Create a password field for password
-        lastname_text.setPrefWidth(150); // Set the width of the text field
+        Label patientLastNameLabel = new Label("Last Name:"); // Create a label for last name
+        TextField patientLastNameField = new TextField(); // Create a text field for last name
+        patientLastNameField.setPrefWidth(150); // Set the width of the text field
         HBox lastnameBox = new HBox(5);
-        lastnameBox.getChildren().addAll(LastNameLabel, lastname_text);
+        lastnameBox.getChildren().addAll(patientLastNameLabel, patientLastNameField);
 
         // email field
-        Label emailLabel = new Label("Email:"); // Create a label for password
-        TextField emailField = new TextField(); // Create a password field for password
+        Label emailLabel = new Label("Email:"); // Create a label for email
+        TextField emailField = new TextField(); // Create a text field for email
         emailField.setPrefWidth(150); // Set the width of the text field
         HBox emailBox = new HBox(5);
         emailBox.getChildren().addAll(emailLabel, emailField);
 
         // phone number field
-        Label phoneLabel = new Label("Phone Number:"); // Create a label for password
-        TextField phoneField = new TextField(); // Create a password field for password
+        Label phoneLabel = new Label("Phone Number:"); // Create a label for phone number
+        TextField phoneField = new TextField(); // Create a text field for phone number
         phoneField.setPrefWidth(150); // Set the width of the text field
         HBox phoneBox = new HBox(5);
         phoneBox.getChildren().addAll(phoneLabel, phoneField);
@@ -197,6 +188,13 @@ public class HealyDashboard extends Application {
         HBox healthHistoryBox = new HBox(5);
         healthHistoryBox.getChildren().addAll(healthHistoryLabel, healthHistoryField);
 
+        // Insurance Provider Box
+        Label insuranceProviderLabel = new Label("Insurance Provider:");
+        TextField insuranceProviderField = new TextField();
+        insuranceProviderField.setPrefWidth(150); // Set the width of the text field
+        HBox insuranceProviderBox = new HBox(5);
+        insuranceProviderBox.getChildren().addAll(insuranceProviderLabel, insuranceProviderField);
+
         // Insurance ID
         Label insuranceIDLabel = new Label("Insurance ID:");
         TextField insuranceIDField = new TextField();
@@ -206,7 +204,7 @@ public class HealyDashboard extends Application {
 
         // Create a layout for the patient intake form fields
         VBox patientIntakeLayout = new VBox(5); // Create a layout with vertical spacing of 5
-        patientIntakeLayout.getChildren().addAll(firstnameBox, lastnameBox, emailBox, phoneBox, healthHistoryBox, insuranceIDBox); // Add the components to the layout
+        patientIntakeLayout.getChildren().addAll(firstnameBox, middlenameBox, lastnameBox, emailBox, phoneBox, healthHistoryBox, insuranceProviderBox, insuranceIDBox); // Add the components to the layout
 
         // Login Button
         Button loginButton = new Button("Save Patient Info"); // Create a button for login
@@ -214,7 +212,17 @@ public class HealyDashboard extends Application {
 
         // Add Event Handler for loginButton to handle the login logic
         loginButton.setOnAction(e -> {
-            // TODO: Add the patient intake logic here
+            String patientId = patientLastNameField.getText() + "_" + patientFirstNameField.getText() + "_" + phoneField.getText();
+            saveData(
+                    patient_intake_db_table,
+                    "first_name", patientFirstNameField.getText(),
+                    "middle_name", patientMiddleNameField.getText(),
+                    "last_name", patientLastNameField.getText(),
+                    "email", emailField.getText(),
+                    "phone_number", phoneField.getText(),
+                    "insurance_provider", insuranceProviderField.getText(),
+                    "patient_id", patientId
+            );
         });
 
         // Add a back button to the top left corner
@@ -244,8 +252,8 @@ public class HealyDashboard extends Application {
         patientIdBox.getChildren().addAll(patientIdLabel, patientIdTextField);
 
         // Total Agatston CAC Score label and text field
-        Label totalCACScoreLabel = new Label("Total Agatston CAC Score: "); // Create a label for password
-        TextField totalCACScoreTextField = new TextField(); // Create a password field for total Agatston CAC Score
+        Label totalCACScoreLabel = new Label("Total Agatston CAC Score: "); // Create a label for cac score
+        TextField totalCACScoreTextField = new TextField(); // Create a text field for total Agatston CAC Score
         totalCACScoreTextField.setPrefWidth(150); // Set the width of the text field
         HBox totalCACScore = new HBox(5); // make a hbox to put them horizontally in order
         totalCACScore.getChildren().addAll(totalCACScoreLabel, totalCACScoreTextField); // add to hbox
@@ -294,7 +302,16 @@ public class HealyDashboard extends Application {
 
         // Add Event Handler for saveButton to handle the login logic
         saveButton.setOnAction(e -> {
-            // TODO: Add the save information for CT Scan Tech logic here
+            saveData(
+                    patient_results_db_table,
+                    "patient_id", patientIdTextField.getText(),
+                    "agaston_cac_score", totalCACScoreTextField.getText(),
+                    "lm_score", lmTextField.getText(),
+                    "lad_score", ladTextField.getText(),
+                    "lcx_score", lcxTextField.getText(),
+                    "rca_score", rcaTextField.getText(),
+                    "pda_score", pdaTextField.getText()
+            );
         });
 
         // Add a back button to the top left corner
@@ -320,7 +337,7 @@ public class HealyDashboard extends Application {
         Label enterPatientIdLabel = new Label("Enter the Patient ID: "); // Create a label for employee name
         TextField patientIdTextField = new TextField(); // Create a text field for patient id
 
-        // Login Button
+        // patient info reload button
         Button patientReloadInformationButton = new Button("Load Patient Information"); // Create a button for login
         patientReloadInformationButton.setStyle(setStyleButtonString); // Set the font size
 
@@ -351,7 +368,7 @@ public class HealyDashboard extends Application {
         // todo: fetch patient name from the database
         String patientName = "";
         // Components for patient login
-        Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:",patientName)); // Create a label for employee name
+        Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:", patientName)); // Create a label for employee name
 
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a back button
@@ -364,5 +381,29 @@ public class HealyDashboard extends Application {
         // Set the scene with height and width
         Scene loadPatientResultsScene = new Scene(loadPatientResults, 600, 600);
         primaryStage.setScene(loadPatientResultsScene); // Set the scene
+    }
+
+    // Database Connection class
+    // Helper class to connect to the local mysql database
+    // The mysql database is called healy_health_system and is hosted on localhost (using docker)
+    public static class DatabaseConnection {
+        private static final String db_name = "healy_health_system";
+        private static final String DB_URL = "jdbc:mysql://localhost:3306/" + db_name;
+        private static final String DB_USER = "root";
+        private static final String DB_PASSWORD = "password";
+
+        public static Connection getConnection() {
+            Connection conn = null;
+            try {
+                // Register the JDBC driver
+                Class.forName("com.mysql.cj.jdbc.Driver");
+
+                // Open a connection
+                conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+            return conn;
+        }
     }
 }
