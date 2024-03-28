@@ -84,26 +84,35 @@ public class homework1FX extends Application {
         // Check which items are selected and add to bill
         if (foodEggSandwich.isSelected()) {
             foodItem = foodEggSandwich.getText();
-        }
-        if (foodChickenSandwich.isSelected()) {
-            foodItem = foodChickenSandwich.getText();
-        }
-        if (foodBagel.isSelected()) {
-            foodItem = foodBagel.getText();
-        }
-        if (foodPotatoSalad.isSelected()) {
-            foodItem = foodPotatoSalad.getText();
-        }
-
-        // Add the food item to the bill
-        Double price = menuPrices.getPrice(foodItem);
-        if (price != null) {
+            Double price = menuPrices.getPrice(foodItem);
             double priceFoodItem = price.doubleValue();
             totalBill += priceFoodItem;
             billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the
                                                                                           // bill
-        } else {
-            totalBill += 0;
+        }
+        if (foodChickenSandwich.isSelected()) {
+            foodItem = foodChickenSandwich.getText();
+            Double price = menuPrices.getPrice(foodItem);
+            double priceFoodItem = price.doubleValue();
+            totalBill += priceFoodItem;
+            billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the
+                                                                                          // bill
+        }
+        if (foodBagel.isSelected()) {
+            foodItem = foodBagel.getText();
+            Double price = menuPrices.getPrice(foodItem);
+            double priceFoodItem = price.doubleValue();
+            totalBill += priceFoodItem;
+            billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the
+                                                                                          // bill
+        }
+        if (foodPotatoSalad.isSelected()) {
+            foodItem = foodPotatoSalad.getText();
+            Double price = menuPrices.getPrice(foodItem);
+            double priceFoodItem = price.doubleValue();
+            totalBill += priceFoodItem;
+            billString.append(foodItem).append(": $").append(priceFoodItem).append("\n"); // Add the food item to the
+                                                                                          // bill
         }
 
         // Check which drink is selected
