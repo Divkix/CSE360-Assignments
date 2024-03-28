@@ -12,10 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +77,34 @@ public class HealyDashboard extends Application {
                 e.printStackTrace();
             }
         }
+    }
+
+    // class to get data from the database
+    // The function takes in a table name and patient ID
+    public static ResultSet getData(String tableName, String patientId) {
+        // Get the database connection
+        Connection conn = DatabaseConnection.getConnection();
+
+        // Create the SQL query
+        String sql = "SELECT * FROM " + tableName + " WHERE patient_id = ?";
+
+        try {
+            // Prepare the SQL query
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // Set the patient ID parameter
+            statement.setString(1, patientId);
+
+            // Execute the query and get the result set
+            ResultSet resultSet = statement.executeQuery();
+
+            // Return the result set
+            return resultSet;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     // Main method to launch the application
@@ -342,9 +367,9 @@ public class HealyDashboard extends Application {
         patientReloadInformationButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add Event Handler for patientReloadInformationButton to handle the login logic
-        patientReloadInformationButton.setOnAction(e -> {
-            int intInsuranceOrPatientId = Integer.parseInt(patientIdTextField.getText()); // Convert the patient id to an integer
-            loadPatientResults(primaryStage, intInsuranceOrPatientId);
+        patientReloadInformationButton.setOnAction(e -> { // Convert the patient id to an integer
+            String patientId = patientIdTextField.getText();
+            loadPatientResults(primaryStage, patientId);
         });
 
         // Add a back button to the top left corner
@@ -360,15 +385,60 @@ public class HealyDashboard extends Application {
         primaryStage.setScene(patientLoginScene); // Set the scene
     }
 
-    private void loadPatientResults(Stage primaryStage, int insuranceOrPatientId) {
+    private void loadPatientResults(Stage primaryStage, String insuranceOrPatientId) {
         VBox loadPatientResults = new VBox(10); // Create a layout with vertical spacing of 10
         loadPatientResults.setAlignment(Pos.CENTER); // Center the components
         loadPatientResults.setStyle(layoutStyleString); // Add padding and center the components
 
-        // todo: fetch patient name from the database
-        String patientName = "";
+        // put base variables here to be used in the try catch block
+        String firstName = "";
+        double totalAgatstonCACScore = 0.0;
+        double lmScore = 0.0;
+        double ladScore = 0.0;
+        double lcxScore = 0.0;
+        double rcaScore = 0.0;
+        double pdaScore = 0.0;
+
+        // retrieve first_name from patient_info table
+        try {
+            ResultSet patientResults = getData(patient_intake_db_table, insuranceOrPatientId);
+            if (patientResults.next()) { // Move the cursor to the first row
+                firstName = patientResults.getString("first_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // retrieve patient information from the database
+        try {
+            ResultSet patientResults = getData(patient_results_db_table, String.valueOf(insuranceOrPatientId));
+            if (patientResults.next()) { // Move the cursor to the first row
+                totalAgatstonCACScore = patientResults.getDouble("agaston_cac_score");
+                lmScore = patientResults.getDouble("lm_score");
+                ladScore = patientResults.getDouble("lad_score");
+                lcxScore = patientResults.getDouble("lcx_score");
+                rcaScore = patientResults.getDouble("rca_score");
+                pdaScore = patientResults.getDouble("pda_score");
+                System.out.println("First Name: " + firstName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         // Components for patient login
-        Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:", patientName)); // Create a label for employee name
+        Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:", firstName)); // Create a label showcasing patient name
+
+        // create a label for each of the risk score and put them in two separate vboxes side by side to show them horizontally
+        VBox riskScores = new VBox(10);
+        riskScores.setAlignment(Pos.CENTER);
+        riskScores.setStyle(layoutStyleString);
+        Label totalAgatstonCACScoreLabel = new Label("Total Agatston CAC Score: " + totalAgatstonCACScore); // Create a label for total Agatston CAC Score
+        Label lmScoreLabel = new Label("LM Score: " + lmScore); // Create a label for LM Score
+        Label ladScoreLabel = new Label("LAD Score: " + ladScore); // Create a label for LAD Score
+        Label lcxScoreLabel = new Label("LCX Score: " + lcxScore); // Create a label for LCX Score
+        Label rcaScoreLabel = new Label("RCA Score: " + rcaScore); // Create a label for RCA Score
+        Label pdaScoreLabel = new Label("PDA Score: " + pdaScore); // Create a label for PDA Score
+        riskScores.getChildren().addAll(totalAgatstonCACScoreLabel, lmScoreLabel, ladScoreLabel, lcxScoreLabel, rcaScoreLabel, pdaScoreLabel); // Add the components to the layout
 
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a back button
@@ -376,7 +446,7 @@ public class HealyDashboard extends Application {
         backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
-        loadPatientResults.getChildren().addAll(patientResultsLabel, backButton);
+        loadPatientResults.getChildren().addAll(patientResultsLabel, riskScores, backButton);
 
         // Set the scene with height and width
         Scene loadPatientResultsScene = new Scene(loadPatientResults, 600, 600);
