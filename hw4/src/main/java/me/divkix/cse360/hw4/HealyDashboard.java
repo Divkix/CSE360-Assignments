@@ -21,6 +21,9 @@ public class HealyDashboard extends Application {
         launch(args);
     }
 
+    // set public variables for setStyle for each button
+    public static String setStyleButtonString = "-fx-font-size: 16pt; -fx-background-color: rgb(54, 94, 187); -fx-text-fill: black;"; // Set the font size and background color
+
     @Override
     public void start(Stage primaryStage) {
         // Initial view
@@ -47,21 +50,21 @@ public class HealyDashboard extends Application {
 
         // Patient Intake button
         Button patientIntakeButton = new Button("Patient Intake"); // Create a button
-        patientIntakeButton.setStyle("-fx-font-size: 16pt;"); // Set the font size
+        patientIntakeButton.setStyle(setStyleButtonString); // Set the font size and background color
         patientIntakeButton.setPrefWidth(250); // Set the button width
-        patientIntakeButton.setOnAction(e -> switchToPatientIntake(primaryStage)); // Switch to patient login
+        patientIntakeButton.setOnAction(e -> switchToPatientIntake(primaryStage)); // Switch to patient intake form
 
         // CT Scan Tech View button
         Button cTScanTechViewButton = new Button("CT Scan Tech View"); // Create a button
-        cTScanTechViewButton.setStyle("-fx-font-size: 16pt;"); // Set the font size
+        cTScanTechViewButton.setStyle(setStyleButtonString); // Set the font size
         cTScanTechViewButton.setPrefWidth(250); // Set the button width
-        cTScanTechViewButton.setOnAction(e -> switchToCTScanTechView(primaryStage)); // Switch to employee login
+        cTScanTechViewButton.setOnAction(e -> switchToCTScanTechView(primaryStage)); // Switch to CT Scan Tech view
 
         // Patient View Screen
         Button patientViewButton = new Button("Patient View"); // Create a button
-        patientViewButton.setStyle("-fx-font-size: 16pt;"); // Set the font size
+        patientViewButton.setStyle(setStyleButtonString); // Set the font size
         patientViewButton.setPrefWidth(250); // Set the button width
-        patientViewButton.setOnAction(e -> switchToPatientView(primaryStage)); // Switch to employee login
+        patientViewButton.setOnAction(e -> switchToPatientView(primaryStage)); // Switch to patient view
 
         // Add the components to the layout
         loginLayout.getChildren().addAll(titleLabel, patientIntakeButton, cTScanTechViewButton, patientViewButton);
@@ -128,7 +131,7 @@ public class HealyDashboard extends Application {
 
         // Login Button
         Button loginButton = new Button("Save Patient Info"); // Create a button for login
-        loginButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        loginButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add Event Handler for loginButton to handle the login logic
         loginButton.setOnAction(e -> {
@@ -138,7 +141,7 @@ public class HealyDashboard extends Application {
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
-        backButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
         patientLoginLayout.getChildren().addAll(titleLabel, patientIntakeLayout, loginButton, backButton);
@@ -208,7 +211,7 @@ public class HealyDashboard extends Application {
 
         // Login Button
         Button saveButton = new Button("Save Information"); // Create a button for saving scores information
-        saveButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        saveButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add Event Handler for saveButton to handle the login logic
         saveButton.setOnAction(e -> {
@@ -218,7 +221,7 @@ public class HealyDashboard extends Application {
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
-        backButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
         patientLoginLayout.getChildren().addAll(patientIdBox, totalCACScore, vesselLevelAgastonCacScore, lmBox, ladBox, lcxBox, rcaBox, pdaBox, saveButton, backButton);
@@ -237,19 +240,21 @@ public class HealyDashboard extends Application {
         // Components for patient login
         Label enterPatientIdLabel = new Label("Enter the Patient ID: "); // Create a label for employee name
         TextField patientIdTextField = new TextField(); // Create a text field for patient id
-        int intInsuranceOrPatientId = Integer.parseInt(patientIdTextField.getText()); // Convert the patient id to an integer
 
         // Login Button
         Button patientReloadInformationButton = new Button("Load Patient Information"); // Create a button for login
-        patientReloadInformationButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        patientReloadInformationButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add Event Handler for patientReloadInformationButton to handle the login logic
-        patientReloadInformationButton.setOnAction(e -> loadPatientResults(primaryStage, intInsuranceOrPatientId));
+        patientReloadInformationButton.setOnAction(e -> {
+            int intInsuranceOrPatientId = Integer.parseInt(patientIdTextField.getText()); // Convert the patient id to an integer
+            loadPatientResults(primaryStage, intInsuranceOrPatientId);
+        });
 
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a back button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
-        backButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
         patientLoginLayout.getChildren().addAll(enterPatientIdLabel, patientIdTextField, patientReloadInformationButton, backButton);
@@ -264,13 +269,15 @@ public class HealyDashboard extends Application {
         loadPatientResults.setAlignment(Pos.CENTER); // Center the components
         loadPatientResults.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
 
+        // todo: fetch patient name from the database
+        String patientName = "";
         // Components for patient login
-        Label patientResultsLabel = new Label("Patient Results:"); // Create a label for employee name
+        Label patientResultsLabel = new Label(String.format("Hello %s, Patient Results:",patientName)); // Create a label for employee name
 
         // Add a back button to the top left corner
         Button backButton = new Button("Back"); // Create a button
         backButton.setOnAction(e -> start(primaryStage)); // Switch to the initial view
-        backButton.setStyle("-fx-font-size: 14pt;"); // Set the font size
+        backButton.setStyle(setStyleButtonString); // Set the font size
 
         // Add the components to the layout
         loadPatientResults.getChildren().addAll(patientResultsLabel, backButton);
