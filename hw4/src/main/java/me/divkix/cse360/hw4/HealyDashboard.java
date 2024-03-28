@@ -156,7 +156,7 @@ public class HealyDashboard extends Application {
     private void switchToPatientIntake(Stage primaryStage) {
         VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
         patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
+        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
 
         // create a label called "Patient Intake Form"
         Label titleLabel = new Label("Patient Intake Form"); // Create a label
@@ -234,7 +234,7 @@ public class HealyDashboard extends Application {
     private void switchToCTScanTechView(Stage primaryStage) {
         VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
         patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
+        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
 
         // Patient ID label and text field
         Label patientIdLabel = new Label("Patient ID: "); // Create a label for employee name
@@ -314,7 +314,7 @@ public class HealyDashboard extends Application {
     private void switchToPatientView(Stage primaryStage) {
         VBox patientLoginLayout = new VBox(10); // Create a layout with vertical spacing of 10
         patientLoginLayout.setAlignment(Pos.CENTER); // Center the components
-        patientLoginLayout.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
+        patientLoginLayout.setStyle(layoutStyleString); // Add padding and center the components
 
         // Components for patient login
         Label enterPatientIdLabel = new Label("Enter the Patient ID: "); // Create a label for employee name
@@ -346,7 +346,7 @@ public class HealyDashboard extends Application {
     private void loadPatientResults(Stage primaryStage, int insuranceOrPatientId) {
         VBox loadPatientResults = new VBox(10); // Create a layout with vertical spacing of 10
         loadPatientResults.setAlignment(Pos.CENTER); // Center the components
-        loadPatientResults.setStyle("-fx-padding: 20; -fx-alignment: center;"); // Add padding and center the components
+        loadPatientResults.setStyle(layoutStyleString); // Add padding and center the components
 
         // todo: fetch patient name from the database
         String patientName = "";
